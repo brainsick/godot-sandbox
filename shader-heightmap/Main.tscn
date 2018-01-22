@@ -1,0 +1,76 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://heightmap.png" type="Texture" id=1]
+
+[sub_resource type="Shader" id=1]
+
+code = "shader_type spatial;
+
+uniform sampler2D heightmap;
+uniform vec4 color : hint_color;
+
+void fragment() {
+	ALBEDO = color.rgb * texture(heightmap, UV).rgb;
+}
+
+uniform float height_range = 0.2;
+
+void vertex() {
+	float height = texture(heightmap, UV).g * height_range;
+	
+	VERTEX.y += height;
+	//NORMAL.y += height; // it can't be this easy
+}"
+
+[sub_resource type="ShaderMaterial" id=2]
+
+render_priority = 0
+shader = SubResource( 1 )
+shader_param/color = Color( 1, 1, 1, 1 )
+shader_param/height_range = 0.5
+shader_param/heightmap = ExtResource( 1 )
+_sections_unfolded = [ "shader_param" ]
+
+[sub_resource type="PlaneMesh" id=3]
+
+size = Vector2( 4, 4 )
+subdivide_width = 10
+subdivide_depth = 10
+
+[node name="Spatial" type="Spatial" index="0"]
+
+[node name="MeshInstance" type="MeshInstance" parent="." index="0"]
+
+layers = 1
+material_override = SubResource( 2 )
+cast_shadow = 1
+extra_cull_margin = 0.0
+use_in_baked_light = false
+lod_min_distance = 0.0
+lod_min_hysteresis = 0.0
+lod_max_distance = 0.0
+lod_max_hysteresis = 0.0
+mesh = SubResource( 3 )
+skeleton = NodePath("..")
+material/0 = null
+_sections_unfolded = [ "Geometry", "material" ]
+
+[node name="Camera" type="Camera" parent="." index="1"]
+
+transform = Transform( 1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 2, 3 )
+visible = false
+keep_aspect = 1
+cull_mask = 1048575
+environment = null
+h_offset = 0.0
+v_offset = 0.0
+doppler_tracking = 0
+projection = 0
+current = false
+fov = 70.0
+size = 1.0
+near = 0.05
+far = 100.0
+_sections_unfolded = [ "Transform" ]
+
+
